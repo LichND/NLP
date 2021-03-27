@@ -2,12 +2,21 @@ const vntk = require('vntk')
 const fs = require('fs')
 
 module.exports = class extends vntk.BayesClassifier {
-    getClassifications(observation) {
+    getClassifications(observation, limit = undefined) {
         let ret = super.getClassifications(super.textToFeatures(observation))
-        if (ret.length >= 2) {
-            ret[0].value = ret[0].value / ret[1].value
+        let total = 0;
+        let len = ret.length
+        for (let i = 0; i < len; i++) {
+            ret[i].value /= ret[len - 1].value
+            total += ret[i].value
         }
-        return ret[0]
+        for (let i = 0; i < len; i++)
+            ret[i].value /= total
+        if (limit == null)
+            limit = len
+        for (let i = limit; i < len; i++)
+            ret.pop();
+        return ret;
     }
 
     save(path, callback) {
@@ -19,6 +28,9 @@ module.exports = class extends vntk.BayesClassifier {
             classTotals: this.classTotals,
             totalExamples: this.totalExamples
         }
+        let dir = path.substring(0, path.lastIndexOf("/"))
+        if (dir.length > 0 && !fs.existsSync(dir))
+            fs.mkdirSync(dir)
         fs.writeFile(path, JSON.stringify(data), callback)
     }
 

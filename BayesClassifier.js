@@ -1,9 +1,10 @@
 const vntk = require('vntk')
 const fs = require('fs')
+const removeNoMeanWord = require('./preDocumentProcess')
 
 module.exports = class extends vntk.BayesClassifier {
     getClassifications(observation, limit = undefined) {
-        let ret = super.getClassifications(super.textToFeatures(observation))
+        let ret = super.getClassifications(super.textToFeatures(removeNoMeanWord(observation)))
         let total = 0;
         let len = ret.length
         for (let i = 0; i < len; i++) {

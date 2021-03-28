@@ -1,6 +1,7 @@
 const fs = require('fs')
 const constant = require('./const')
-const rimraf = require("rimraf");
+const rimraf = require("rimraf")
+const removeNoMeanWord = require('./preDocumentProcess')
 
 let topicDir = constant.dataDir + "topic/"
 let typeDir = constant.dataDir + "type/"
@@ -24,10 +25,10 @@ Promise.all([parseData(topicDir), parseData(typeDir)]).then(([topic, type]) => {
         let typeString = ""
         type[key].forEach(text => {
             if (text.indexOf("%s") < 0)
-                typeString += text + "\r\n"
+                typeString += removeNoMeanWord(text) + "\r\n"
             else {
                 for (var key in topic)
-                    topic[key].forEach(topic => typeString += text.replace("%s", topic) + "\r\n")
+                    topic[key].forEach(topic => typeString += removeNoMeanWord(text.replace("%s", topic)) + "\r\n")
             }
         })
         let typeDir = constant.trainDir + "type/"
@@ -42,7 +43,7 @@ Promise.all([parseData(topicDir), parseData(typeDir)]).then(([topic, type]) => {
             for (let key in type)
                 type[key].forEach(type => {
                     if (type.indexOf("%s") >= 0)
-                        topicString += type.replace("%s", text) + "\r\n"
+                        topicString += removeNoMeanWord(type.replace("%s", text)) + "\r\n"
                 })
         })
         let topicDir = constant.trainDir + "topic/"

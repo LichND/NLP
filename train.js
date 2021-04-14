@@ -5,12 +5,14 @@ const rimraf = require("rimraf")
 
 rimraf.sync(constant.outDir)
 fs.mkdirSync(constant.outDir)
-fs.rename(constant.dataDir + constant.tagFile, constant.outDir + constant.tagFile, constant.callback)
+fs.exists(constant.dataDir + constant.tagFile, exists => exists && fs.copyFile(constant.dataDir + constant.tagFile, constant.outDir + constant.tagFile, constant.callback))
 
 let input = [constant.dataDir + constant.topicFile, constant.dataDir + constant.typeFile]
 let output = [constant.outDir + constant.topicFile, constant.outDir + constant.typeFile]
 
 const train = (input, output, callback) => {
+    if (!fs.existsSync(input))
+        throw `File "${input}" not found`
     let classifier = new fastText.Classifier();
     classifier.train("supervised", {
         input: input,

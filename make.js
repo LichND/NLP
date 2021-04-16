@@ -2,6 +2,7 @@ const fs = require('fs')
 const rimraf = require("rimraf")
 const readData = require('./readRaw')
 const constant = require('./const')
+const { tagFile } = require('./const')
 
 rimraf.sync(constant.dataDir)
 fs.mkdirSync(constant.dataDir)
@@ -62,9 +63,17 @@ Promise.all([readData(topicDir), readData(typeDir), readData(mix)]).then(([topic
     tagfile += "const type = {\n"
     allType.forEach(e => tagfile += `\t${tag2text(e)}: "${e}",\n`)
     tagfile += "}\n\n"
+
+    // tagfile += "const tag = {\n"
+    // allTopic.forEach(e => tagfile += `\t"${e}": "${tag2text(e)}",\n`)
+    // allType.forEach(e => tagfile += `\t"${e}": "${tag2text(e)}",\n`)
+    // tagfile = tagfile.substring(0, tagfile.length - 1)
+    // tagfile += "\n}\n\n"
+
     tagfile += "const o = {\n"
     tagfile += "\ttopic: topic,\n"
-    tagfile += "\ttype: type\n"
+    tagfile += "\ttype: type,\n"
+    // tagfile += "\ttag: tag,\n"
     tagfile += "}\n\n"
     tagfile += "export default o"
 

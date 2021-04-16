@@ -2,7 +2,7 @@ const obj = {
     inpDir: "input/",
     outDir: "out/",
     dataDir: "data/",
-    topicFile: "tag",
+    topicFile: "topic",
     typeFile: "type",
     tagFile: "tag.ts",
     callback: (err, ...args) => {
@@ -29,7 +29,7 @@ const obj = {
         "L": { mean: "Định từ", like: "-" },
         "M": { mean: "Số từ", like: "-" },
         "R": { mean: "Phó từ", like: "V" },
-        "E": { mean: "Giới từ", like: "E" },
+        "E": { mean: "Giới từ", like: "-" },
         "C": { mean: "Liên từ", like: "E" },
         "I": { mean: "Thán từ", like: "-" },
         "T": { mean: "Trợ từ, tình thái từ", like: "-" },

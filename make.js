@@ -2,7 +2,6 @@ const fs = require('fs')
 const rimraf = require("rimraf")
 const readData = require('./readRaw')
 const constant = require('./const')
-const { tagFile } = require('./const')
 
 rimraf.sync(constant.dataDir)
 fs.mkdirSync(constant.dataDir)
@@ -51,6 +50,7 @@ let mix = constant.inpDir + "mix"
 
 Promise.all([readData(topicDir), readData(typeDir), readData(mix)]).then(([topic, type, mix]) => {
     let write = []
+    let regular = []
     let allTopic = Object.keys(topic)
     let allType = Object.keys(type)
 
@@ -81,12 +81,11 @@ Promise.all([readData(topicDir), readData(typeDir), readData(mix)]).then(([topic
 
     for (let key in type) {
         type[key].forEach(text => {
-            if (text.indexOf("%s") < 0)
-                write.push({ tag: [key], text: text })
-            else {
+            if (text.indexOf("%s") >= 0)
                 for (let t in topic)
                     topic[t].forEach(topic => write.push({ tag: [key, t], text: text.replace("%s", topic) }))
-            }
+
+            regular.push({ tag: [key], text: text.replace("%s", "") })
         })
     }
     // mixxing
@@ -114,6 +113,7 @@ Promise.all([readData(topicDir), readData(typeDir), readData(mix)]).then(([topic
         })
     console.log("shuffle input...")
     shuffle(write, ~~Math.sqrt(write.length))
+    shuffle(regular, ~~Math.sqrt(regular.length))
 
     type = []
     topic = []
@@ -141,4 +141,5 @@ Promise.all([readData(topicDir), readData(typeDir), readData(mix)]).then(([topic
         fs.mkdirSync(dataDir)
     fs.writeFile(dataDir + constant.typeFile, arr2string(type, allType), constant.callback)
     fs.writeFile(dataDir + constant.topicFile, arr2string(topic, allTopic), constant.callback)
+    fs.writeFile(dataDir + constant.regularFile, arr2string(regular, allType), constant.callback)
 })

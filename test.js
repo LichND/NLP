@@ -2,7 +2,7 @@ const vntk = require('vntk');
 const constant = require('./const')
 const sentanceBoundary = require('./sentence-boundary')
 
-const model = [constant.outDir + constant.topicFile + ".bin", constant.outDir + constant.typeFile + ".bin"]
+const model = [constant.outDir + constant.regularFile + ".bin", constant.outDir + constant.topicFile + ".bin", constant.outDir + constant.typeFile + ".bin"]
 var classifier = []
 model.forEach(e => classifier.push(new vntk.FastTextClassifier(e)))
 
@@ -45,13 +45,18 @@ for (let i = 0, len = sentanceSplit.length; i < len; i++)
     res[i] = getResult(sentanceSplit[i], 4)
 Promise.all(res).then((res) => {
     let ret = []
-    for (let i = 0, len = sentanceSplit.length; i < len; i++)
+    for (let i = 0, len = sentanceSplit.length; i < len; i++) {
         ret[i] = {
             input: sentanceSplit[i],
-            topic: res[i][0][0].label,
-            "topic%": res[i][0][0].value,
-            type: res[i][1][0].label,
-            "type%": res[i][1][0].value,
+            regular: res[i][0][0].label,
+            "regular%": res[i][0][0].value
         }
+        if (res[i][1][0] && res[i][2][0]) {
+            ret[i].topic = res[i][1][0].label;
+            ret[i]["topic%"] = res[i][1][0].value;
+            ret[i].type = res[i][2][0].label;
+            ret[i]["type%"] = res[i][2][0].value;
+        }
+    }
     console.log(ret)
 }).catch((err) => { throw err })

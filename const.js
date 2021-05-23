@@ -3,6 +3,7 @@ const obj = {
     outDir: "out/",
     dataDir: "data/",
     topicFile: "topic",
+    regularFile: "regular",
     typeFile: "type",
     tagFile: "tag.ts",
     callback: (err, ...args) => {

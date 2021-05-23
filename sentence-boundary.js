@@ -21,7 +21,12 @@ var RuleBasedSentenceBoundaryDetection = (input) => {
     i = 0, len = data.length, index = 0
     let ret = []
     let S = "", V = "", O = ""
-    // fix unknow tag
+    // fix non S start
+    while (len > 1 && data[i][1].indexOf("S") < 0) {
+        let tmp = data.shift()
+        data[i][0] = tmp[0] + " " + data[i][0]
+        len -= 1
+    }
     if (data[len - 1][1] == "-")
         data[len - 1][1] = "SO"
     // apply sentance = S + V + O

@@ -6,6 +6,7 @@ const obj = {
     regularFile: "regular",
     typeFile: "type",
     tagFile: "tag.ts",
+    keyword: "keyword.ts",
     callback: (err, ...args) => {
         if (err)
             throw err;

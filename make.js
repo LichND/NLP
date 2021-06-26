@@ -64,20 +64,43 @@ Promise.all([readData(topicDir), readData(typeDir), readData(mix)]).then(([topic
     allType.forEach(e => tagfile += `\t${tag2text(e)}: "${e}",\n`)
     tagfile += "}\n\n"
 
-    // tagfile += "const tag = {\n"
-    // allTopic.forEach(e => tagfile += `\t"${e}": "${tag2text(e)}",\n`)
-    // allType.forEach(e => tagfile += `\t"${e}": "${tag2text(e)}",\n`)
-    // tagfile = tagfile.substring(0, tagfile.length - 1)
-    // tagfile += "\n}\n\n"
-
     tagfile += "const o = {\n"
     tagfile += "\ttopic: topic,\n"
     tagfile += "\ttype: type,\n"
-    // tagfile += "\ttag: tag,\n"
     tagfile += "}\n\n"
     tagfile += "export default o"
 
     fs.writeFile(constant.dataDir + constant.tagFile, tagfile, constant.callback)
+
+    let keywordData = []
+    allTopic.forEach(e => {
+        let len = 0;
+        topic[e].forEach(st => len = Math.max(len, st.split(" ").length))
+        keywordData[tag2text(e)] = { key: topic[e], length: len }
+        keywordData.push({
+            key: tag2text(e),
+            value: topic[e],
+            length: len
+        })
+    })
+    keywordData.sort((a, b) => {
+        let dif = b.length - a.length
+        if (dif != 0)
+            return dif
+        return b.key.length - a.key.length
+    })
+    let keywordFile = "";
+    keywordFile += "const keyword = [\n"
+    keywordData.forEach(e => {
+        keywordFile += `\t{\n`
+        keywordFile += `\t\ttopic: "${e.key}",\n`
+        keywordFile += `\t\tkey: ${JSON.stringify(e.value)}\n`
+        keywordFile += `\t},\n`
+    })
+    keywordFile += `] as ikeyword[]\n\n`
+    keywordFile += `export default keyword\n\n`
+    keywordFile +=`interface ikeyword {\n\ttopic: string\n\tkey: string[]\n}`
+    fs.writeFile(constant.dataDir + constant.keyword, keywordFile, constant.callback);
 
     for (let key in type) {
         type[key].forEach(text => {
